@@ -21,9 +21,12 @@ public class Quotation {
     public static String id = "";
     public static String value = "";
     public static String name = "";
+    public static ArrayList<String> currencyNew = new ArrayList<String>();
 
 
-    public static void requestRates(String date, String currency) throws ParserConfigurationException, IOException, SAXException {
+    public static ArrayList<String> requestRates(String date, String currency) throws ParserConfigurationException, IOException, SAXException {
+
+
 
         String request = Unirest.get("https://www.cbr.ru/scripts/XML_daily.asp?date_req={date}"
             ).routeParam("date", date).asString().getBody();
@@ -52,11 +55,22 @@ public class Quotation {
             value = getParams(currencies).get(0);
 
             String output = "1" + " " +  name + " = " + value + " " + "Российский рубль";
+
+            String nameNew = name;
+            String valueNew = value;
+
+            currencyNew.add(nameNew);
+            currencyNew.add(valueNew);
             System.out.println(output);
+
         }
         catch (DateError | CurrencyIdError exception) {
             System.out.println(exception);
         }
+//        finally {
+//
+//        }
+        return currencyNew;
     }
 
 
@@ -72,7 +86,6 @@ public class Quotation {
             }
             n += 1;
         }
-        System.out.println(id);
         return id;
     }
 
