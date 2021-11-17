@@ -11,6 +11,10 @@ public class Main {
 
     private final static String url = "jdbc:mysql://localhost:3306/data_currency";
     private final static String user = "root";
+    public static  String dateF = "";
+    public static  String currencyF = "";
+    public static  String valueF = "";
+
 
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, SQLException {
 
@@ -31,16 +35,41 @@ public class Main {
                 String inputID = input.next();
                 exit(inputID);
 
-                try {
+                try{
+                    ArrayList<String> dateList = new ArrayList<>();
+                    ArrayList<String> currencyList = new ArrayList<>();
+                    ArrayList<String> valueList = new ArrayList<>();
+                    while(resultSet.next()){
+                        dateList.add(resultSet.getString("DATE"));
+                        currencyList.add(resultSet.getString("CURRENCY"));
+                        valueList.add(resultSet.getString("VALUE"));
+                   }
 
-                    String date = resultSet.getString(inputDate);
-                    String id = resultSet.getString(inputID);
-                    String value = resultSet.getString(5);
-                    System.out.printf(" 1 %s = %s Российский рубль", id, value);
-                    Quotation.requestRates(inputDate, inputID);
-                    System.out.println("\n\n");
+                    int find = 0;
+                    int index = 0;
+                    for(String date: dateList){
+                        if (date.equals(inputDate)){
+                            String cur = currencyList.get(index);
+                            if (cur.equals(inputID)){
+                                dateF = date;
+                                currencyF = cur;
+                                valueF = valueList.get(index);
+                                find += 1;
+                                String output = "1" + " " + currencyF + " = " + valueF + " " + "Российский рубль";
+                                System.out.println(output);
+                                break;
+                            }
+                            }else{
+                            index++;
+                        }
 
-                } catch (Exception ex) {
+                        }
+                    if (find == 0) {
+                        throw new SQLException();
+
+                    }
+
+                } catch (Exception SQLException) {
                     Quotation.requestRates(inputDate, inputID);
 
                     ArrayList<String> req = Quotation.requestRates(inputDate, inputID);
@@ -53,16 +82,22 @@ public class Main {
 
                 }
             }
-        } catch (Exception ex) {
+
+        }
+        catch (Exception ex) {
             System.out.println("Connection failed...");
-            //System.out.println(ex);
         }
     }
 
-        static void exit(String input) {
+
+
+    static void exit(String input) {
         if (input.equals("Exit")) {
             System.out.println("Выход из программы");
             System.exit(0);
         }
+    }
+    public static void updateBD(){
+
     }
 }
