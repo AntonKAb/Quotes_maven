@@ -27,9 +27,8 @@ public class Quotation {
     public static ArrayList<String> requestRates(String date, String currency) throws ParserConfigurationException, IOException, SAXException {
 
 
-
         String request = Unirest.get("https://www.cbr.ru/scripts/XML_daily.asp?date_req={date}"
-            ).routeParam("date", date).asString().getBody();
+        ).routeParam("date", date).asString().getBody();
 
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -46,7 +45,7 @@ public class Quotation {
             NodeList chars = doc.getDocumentElement().getElementsByTagName("CharCode");
             id = getCurrency(chars, currency);
 
-            if (id.equals("") | id.equals(" ")){
+            if (id.equals("") | id.equals(" ")) {
                 throw new CurrencyIdError();
             }
 
@@ -54,7 +53,7 @@ public class Quotation {
             name = getParams(currencies).get(1);
             value = getParams(currencies).get(0);
 
-            String output = "1" + " " +  name + " = " + value + " " + "Российский рубль";
+            String output = "1" + " " + name + " = " + value + " " + "Российский рубль";
 
             String nameNew = name;
             String valueNew = value;
@@ -63,8 +62,7 @@ public class Quotation {
             currencyNew.add(valueNew);
             System.out.println(output);
 
-        }
-        catch (DateError | CurrencyIdError exception) {
+        } catch (DateError | CurrencyIdError exception) {
             System.out.println(exception);
         }
 //        finally {
@@ -74,7 +72,7 @@ public class Quotation {
     }
 
 
-    private static String getCurrency(NodeList code, String currency){
+    private static String getCurrency(NodeList code, String currency) {
         String id = "";
         int n = 0;
         while (n < code.getLength()) {
@@ -89,7 +87,7 @@ public class Quotation {
         return id;
     }
 
-    private static ArrayList<String> getParams(NodeList currencies){
+    private static ArrayList<String> getParams(NodeList currencies) {
         String valueGet = "";
         String nameGet = "";
         int element = 0;
@@ -117,5 +115,33 @@ public class Quotation {
         params.add(valueGet);
         params.add(nameGet);
         return params;
+    }
+
+    public static void allCurrency(String date) {
+        try {
+            String response = Unirest.get("https://www.cbr.ru/scripts/XML_daily.asp?date_req={date}"
+            ).routeParam("date", date).asString().getBody();
+
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder;
+            docBuilder = builderFactory.newDocumentBuilder();
+            Document document = docBuilder.parse(new InputSource(new StringReader(response)));
+
+            String textError = document.getDocumentElement().getTextContent();
+
+            if (textError.equals("Error in parameters")) {
+                throw new DateError();
+            }
+
+
+
+
+        } catch (DateError exception) {
+            System.out.println(exception);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+        e.printStackTrace();
+//        } finally {
+//            break;
+        }
     }
 }
