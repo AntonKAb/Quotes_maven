@@ -31,7 +31,8 @@ public class MainClass {
 
             Connection connection = DriverManager.getConnection(url, user, "12124576");
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM Quoters");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM Currency");
+
 
             try {
                 ArrayList<String> dateList = new ArrayList<>();
@@ -74,7 +75,7 @@ public class MainClass {
 
                 String valueNew = req.get(1);
 
-                statement.executeUpdate("INSERT Quoters(DATE, CURRENCY, VALUE) " +
+                statement.executeUpdate("INSERT Currency(DATE, CURRENCY, VALUE) " +
                         "VALUES ('" + inputDate + "', '" + inputID + "', '" + valueNew + "')");
                 System.out.println("\n\n");
 
@@ -104,4 +105,9 @@ public class MainClass {
         System.out.println(newDate);
         return newDate;
     }
+
+    public static void write(){
+
+    }
+
 }

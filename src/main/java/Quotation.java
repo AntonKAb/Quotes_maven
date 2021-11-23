@@ -3,6 +3,7 @@ import kong.unirest.Unirest;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -10,6 +11,8 @@ import org.xml.sax.SAXException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -117,7 +120,8 @@ public class Quotation {
         return params;
     }
 
-    public static void allCurrency(String date) {
+    public static HashMap<String, String> allCurrency(String date) {
+
         try {
             String response = Unirest.get("https://www.cbr.ru/scripts/XML_daily.asp?date_req={date}"
             ).routeParam("date", date).asString().getBody();
@@ -132,9 +136,17 @@ public class Quotation {
             if (textError.equals("Error in parameters")) {
                 throw new DateError();
             }
+            NodeList listCur = document.getElementsByTagName("Valute");
+            HashMap<String, String> map = new HashMap<String, String>();
 
-
-
+            for (int i = 0; i < listCur.getLength(); i++) {
+                Node nNode = listCur.item(i);
+                Element valElement = (Element) nNode;
+                String charCode = valElement.getElementsByTagName("CharCode").item(0).getTextContent();
+                String value = valElement.getElementsByTagName("Value").item(0).getTextContent();
+                map.put(charCode, value);
+            }
+            return map;
 
         } catch (DateError exception) {
             System.out.println(exception);
@@ -143,5 +155,6 @@ public class Quotation {
 //        } finally {
 //            break;
         }
+        return null;
     }
 }
